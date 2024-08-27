@@ -29,7 +29,7 @@ def send_axis_data(steering_value, accelerator_value, brake_value):
             "accelerator": round(accelerator_value, 3),
             "brake": round(brake_value, 3)
         }
-    }
+    }  #a nested dictionary with one key 'axes', and it is used in server.py as data['axes']
 
     try:
         # Send the data to the server via a POST request
