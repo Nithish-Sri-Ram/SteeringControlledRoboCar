@@ -7,8 +7,8 @@ import json
 pygame.init()
 
 # Server URLs
-post_server_url = "http://localhost:5000/test"
-get_custom_url = "http://localhost:5000/endpoint"
+post_server_url = "https://steeringcontrolledrobocar.onrender.com/test"
+get_custom_url = "https://steeringcontrolledrobocar.onrender.com/endpoint"
 
 # Sensitivity threshold for axis movement
 AXIS_THRESHOLD = 0.1 #sends data only if this threshold is met
