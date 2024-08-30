@@ -1,4 +1,7 @@
-Flask
-gunicorn
-pygame
-requests
+fastapi==0.112.2
+mangum==0.17.0
+pydantic==2.7.1
+pydantic_core==2.18.2
+requests==2.31.0
+uvicorn==0.30.6
+wheel==0.43.0

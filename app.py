@@ -1,31 +1,5 @@
-# from flask import Flask, request, jsonify
-
-# app = Flask(__name__)
-
-# # Store the latest axis data
-# latest_axis_data = {}
-
-# @app.route('/test', methods=['POST'])    #for post data
-# def receive_data():
-#     global latest_axis_data
-#     data = request.json
-#     if 'axes' in data:
-#         latest_axis_data = data['axes']
-#         print(f"Received axis data: {latest_axis_data}")
-#         return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-#     return jsonify({"status": "error", "message": "No axis data received"}), 400
-
-# @app.route('/endpoint', methods=['GET'])  #for get data
-# def send_data():
-#     if latest_axis_data:
-#         return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-#     return jsonify({"status": "error", "message": "No data available"}), 400
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=True)
-
-
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, Request, HTTPException
+from pydantic import BaseModel
 import pygame
 import time
 import requests
@@ -35,7 +9,7 @@ import threading
 # Initialize Pygame
 pygame.init()
 
-app = Flask(__name__)
+app = FastAPI()
 
 # Store the latest axis data
 latest_axis_data = {}
@@ -52,8 +26,13 @@ BRAKE_AXIS = 3
 prev_axis_values = {STEERING_AXIS: 0, ACCELERATOR_AXIS: -1, BRAKE_AXIS: -1}
 
 # Server URLs
-post_server_url = "https://steeringcontrolledrobocar.onrender.com/test"
-get_custom_url = "https://steeringcontrolledrobocar.onrender.com/endpoint"
+post_server_url = "https://steeringcontrolledrobocar.onrender.com/send"
+get_custom_url = "https://steeringcontrolledrobocar.onrender.com/receive"
+
+class AxisData(BaseModel):
+    steering: float
+    accelerator: float
+    brake: float
 
 def send_axis_data(steering_value, accelerator_value, brake_value):
     data = {
@@ -124,21 +103,18 @@ def controller_logic():
         finally:
             pygame.quit()
 
-@app.route('/test', methods=['POST'])  # for post data
-def receive_data():
+@app.post("/send")
+async def receive_data(data: AxisData):
     global latest_axis_data
-    data = request.json
-    if 'axes' in data:
-        latest_axis_data = data['axes']
-        print(f"Received axis data: {latest_axis_data}")
-        return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-    return jsonify({"status": "error", "message": "No axis data received"}), 400
+    latest_axis_data = data.dict()
+    print(f"Received axis data: {latest_axis_data}")
+    return {"status": "success", "received_axes": latest_axis_data}
 
-@app.route('/endpoint', methods=['GET'])  # for get data
-def send_data():
+@app.get("/receive")
+async def send_data():
     if latest_axis_data:
-        return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-    return jsonify({"status": "error", "message": "No data available"}), 400
+        return {"status": "success", "received_axes": latest_axis_data}
+    raise HTTPException(status_code=400, detail="No data available")
 
 if __name__ == '__main__':
     # Start the controller logic in a separate thread
@@ -146,5 +122,6 @@ if __name__ == '__main__':
     controller_thread.daemon = True  # Allows the program to exit even if the thread is running
     controller_thread.start()
 
-    # Start the Flask app
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Start the FastAPI app
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=5000)
