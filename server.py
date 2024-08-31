@@ -1,29 +1,3 @@
-# from flask import Flask, request, jsonify
-
-# app = Flask(__name__)
-
-# # Store the latest axis data
-# latest_axis_data = {}
-
-# @app.route('/test', methods=['POST'])    #for post data
-# def receive_data():
-#     global latest_axis_data
-#     data = request.json 
-#     if 'axes' in data:
-#         latest_axis_data = data['axes']  #dictionary with key value pairs
-#         print(f"Received axis data: {latest_axis_data}")
-#         return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-#     return jsonify({"status": "error", "message": "No axis data received"}), 400
-
-# @app.route('/endpoint', methods=['GET'])  #for get data
-# def send_data():
-#     if latest_axis_data:
-#         return jsonify({"status": "success", "received_axes": latest_axis_data}), 200
-#     return jsonify({"status": "error", "message": "No data available"}), 400
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=True)
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pygame
@@ -47,7 +21,10 @@ BRAKE_AXIS = 3
 prev_axis_values = {STEERING_AXIS: 0, ACCELERATOR_AXIS: -1, BRAKE_AXIS: -1}
 
 # The URL of the remote FastAPI server
-REMOTE_SERVER_URL = "https://steerbot-5wxsx9son-nithishs-projects-8d26ce03.vercel.app/send"
+REMOTE_SERVER_URL = "https://steerbot-6he48xydx-nithishs-projects-8d26ce03.vercel.app/send"
+
+# Global variable to store the latest axis data
+latest_axis_data = None
 
 class AxisData(BaseModel):
     steering: float
@@ -101,7 +78,7 @@ async def controller_logic():
                 except requests.RequestException as e:
                     print(f"Error sending data: {e}")
 
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.00)
 
 @app.post("/send")
 async def receive_data(data: AxisData):
@@ -121,7 +98,9 @@ async def health_check():
     return "The Healthcheck is successful!"
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.create_task(controller_logic())
+    # Run the controller logic in a background task
+    asyncio.run(controller_logic())
+
+    # Run the FastAPI app using Uvicorn
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=5000)
