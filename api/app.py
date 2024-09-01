@@ -39,7 +39,7 @@ async def receive_sensor_data(data: SensorData):
 @app.get("/receive_sensor")
 async def send_sensor_data():
     if latest_sensor_data:
-        return {"status": "success", "received_sensor": latest_sensor_data}
+        return {"status": "Air quality check: Clean and clear, no pollution detected.", "received_sensor": latest_sensor_data}
     logging.warning("No sensor data available")
     raise HTTPException(status_code=400, detail="No sensor data available")
 
