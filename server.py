@@ -21,7 +21,7 @@ BRAKE_AXIS = 3
 prev_axis_values = {STEERING_AXIS: 0, ACCELERATOR_AXIS: -1, BRAKE_AXIS: -1}
 
 # The URL of the remote FastAPI server
-REMOTE_SERVER_URL = "https://steerbot-6he48xydx-nithishs-projects-8d26ce03.vercel.app/send"
+REMOTE_SERVER_URL = "https://steerbot-2v6kq8dno-nithishs-projects-8d26ce03.vercel.app/send"
 
 # Global variable to store the latest axis data
 latest_axis_data = None
