@@ -1,4 +1,7 @@
 # Steering Controller Robot for RC Car
+
+https://github.com/user-attachments/assets/1943d9a4-25af-40ad-9340-090db66099d2
+
 # Steer-Bot
 
 This repository contains the code and setup instructions for a steering controller robot that can control an RC car remotely, just like driving a real car. The project uses an ESP8266 microcontroller with Wi-Fi connectivity to send and receive data via the cloud, enabling control of the car from anywhere in the world.
